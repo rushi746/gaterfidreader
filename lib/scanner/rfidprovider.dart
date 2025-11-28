@@ -1,0 +1,121 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qrcodedataextraction/data/apiservice.dart';
+import 'package:zebra_rfid_sdk_plugin/zebra_event_handler.dart';
+import 'package:zebra_rfid_sdk_plugin/zebra_rfid_sdk_plugin.dart';
+
+// --- 1. State Class to hold all data ---
+class ScannerState {
+  final String rawRfid;      // The long hex string from scanner
+  final String tagLabel;     // The 'Tag_Lable' from API
+  final bool isLoading;      // To show spinner during API call
+  final String? errorMessage;
+
+  ScannerState({
+    this.rawRfid = "",
+    this.tagLabel = "",
+    this.isLoading = false,
+    this.errorMessage,
+  });
+
+  ScannerState copyWith({
+    String? rawRfid,
+    String? tagLabel,
+    bool? isLoading,
+    String? errorMessage,
+  }) {
+    return ScannerState(
+      rawRfid: rawRfid ?? this.rawRfid,
+      tagLabel: tagLabel ?? this.tagLabel,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
+    );
+  }
+}
+
+// --- 2. The Provider Definition ---
+final rfidScanProvider = StateNotifierProvider<RfidScanNotifier, ScannerState>((ref) {
+  return RfidScanNotifier();
+});
+
+// --- 3. The Controller Logic ---
+class RfidScanNotifier extends StateNotifier<ScannerState> {
+  RfidScanNotifier() : super(ScannerState()) {
+    connectSdk();
+  }
+
+  void connectSdk() {
+    ZebraRfidSdkPlugin.setEventHandler(ZebraEngineEventHandler(
+      readRfidCallback: (datas) {
+        if (datas.isNotEmpty) {
+          String tagId = datas.first.tagID ?? "";
+          // Only process if it's a new tag to avoid spamming API
+          if (tagId != state.rawRfid) {
+            _handleScannedTag(tagId);
+          }
+        }
+      },
+      errorCallback: (err) {
+        state = state.copyWith(errorMessage: "Scanner Error: ${err.errorMessage}");
+      },
+      connectionStatusCallback: (status) {
+        print("🔌 Connection Status: $status");
+      },
+    ));
+    ZebraRfidSdkPlugin.connect();
+  }
+
+  // Logic to handle scan and call API immediately
+  Future<void> _handleScannedTag(String rawTag) async {
+    // 1. Update state with raw tag and loading true
+    state = state.copyWith(rawRfid: rawTag, isLoading: true, errorMessage: null);
+
+    try {
+      // 2. Call API to get Label
+      final data = await ApiService.getTagLabel(rawTag);
+
+      if (data != null && data.containsKey('Tag_Lable')) {
+        // 3. Success: Update Tag Label
+        state = state.copyWith(
+          tagLabel: data['Tag_Lable'].toString(),
+          isLoading: false
+        );
+      } else {
+        state = state.copyWith(isLoading: false, errorMessage: "Tag not found in DB");
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: "API Failed");
+    }
+  }
+
+  // Logic to Submit final data
+  Future<bool> submitData(String containerNo) async {
+    if (state.tagLabel.isEmpty) return false;
+
+    state = state.copyWith(isLoading: true);
+
+    // Construct Payload
+    final payload = {
+      "ContNo": containerNo,
+      "ContSizeId": 20, 
+      "ContTypeId": 1,  
+      "TagId": state.tagLabel, 
+      "IsGateIn": true,
+      "ActivityId": 5,
+      "ProcessId": 2,
+      "IsActivePrioritize": false,
+      "Cont_Ref_no": "REF-${DateTime.now().millisecondsSinceEpoch}", // Example dynamic ref
+      "GateInType": 1,
+      "Line_No": "LINE-01",
+      "GateInBy": 101
+    };
+
+    final success = await ApiService.submitContainerGateIn(payload);
+    
+    state = state.copyWith(isLoading: false);
+    return success;
+  }
+
+  void disconnect() {
+    ZebraRfidSdkPlugin.disconnect();
+  }
+}

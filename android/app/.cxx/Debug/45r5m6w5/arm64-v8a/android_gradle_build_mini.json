@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/vaibhavghugase/Desktop/projects/setups/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/vaibhavghugase/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/vaibhavghugase/Desktop/projects/qikkkle/projects/qrcodedataextraction/android/app/.cxx/Debug/45r5m6w5/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/vaibhavghugase/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/vaibhavghugase/Desktop/projects/qikkkle/projects/qrcodedataextraction/android/app/.cxx/Debug/45r5m6w5/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

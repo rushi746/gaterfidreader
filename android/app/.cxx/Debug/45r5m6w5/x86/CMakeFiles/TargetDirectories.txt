@@ -1,0 +1,2 @@
+/Users/vaibhavghugase/Desktop/projects/qikkkle/projects/qrcodedataextraction/android/app/.cxx/Debug/45r5m6w5/x86/CMakeFiles/edit_cache.dir
+/Users/vaibhavghugase/Desktop/projects/qikkkle/projects/qrcodedataextraction/android/app/.cxx/Debug/45r5m6w5/x86/CMakeFiles/rebuild_cache.dir
