@@ -54,7 +54,7 @@ static const String apiUrl = "http://qikkle.com/Eklavya_GDLRFID/GateIn/PendingCo
     try {
       final url = Uri.parse("$baseUrl/TagMaster/GetTagLable");
       final body = jsonEncode({"tag": tag});
-
+print("📤 Request Body for Tag Label: $body");
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
@@ -62,6 +62,7 @@ static const String apiUrl = "http://qikkle.com/Eklavya_GDLRFID/GateIn/PendingCo
       );
 
       if (response.statusCode == 200) {
+        print("✅ Get Tag Label Success=========: ${response.body}");
         return jsonDecode(response.body);
       } else {
         print("❌ API Error: ${response.statusCode}");
@@ -87,6 +88,8 @@ static const String apiUrl = "http://qikkle.com/Eklavya_GDLRFID/GateIn/PendingCo
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+       print("✅ Submit Success=======================: ${response.body}"); 
+
         return true;
       } else {
         print("❌ Submit Error: ${response.body}");

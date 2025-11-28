@@ -41,7 +41,6 @@ class ContainerModel {
       lineNo: json['Line']?.toString() ?? "",
       containerRefNumber: json['Cont_ref_no']?.toString() ?? "",
 
-      // API me nahi aata, so default
     );
   }
 }

@@ -68,28 +68,76 @@ class RfidScanNotifier extends StateNotifier<ScannerState> {
     ZebraRfidSdkPlugin.connect();
   }
 
-  // Logic to handle scan and call API immediately
-  Future<void> _handleScannedTag(String rawTag) async {
-    // 1. Update state with raw tag and loading true
-    state = state.copyWith(rawRfid: rawTag, isLoading: true, errorMessage: null);
+//   // Logic to handle scan and call API immediately
+//   Future<void> _handleScannedTag(String rawTag) async {
+//     // 1. Update state with raw tag and loading true
+//     state = state.copyWith(rawRfid: rawTag, isLoading: true, errorMessage: null);
+// 
+//     try {
+//       // 2. Call API to get Label
+//       final data = await ApiService.getTagLabel(rawTag);
+// 
+//       if (data != null && data.containsKey('Tag_Lable')) {
+//         // 3. Success: Update Tag Label
+//         state = state.copyWith(
+//           tagLabel: data['Tag_Lable'].toString(),
+//           isLoading: false
+//         );
+//       } else {
+//         state = state.copyWith(isLoading: false, errorMessage: "Tag not found in DB");
+//       }
+//     } catch (e) {
+//       state = state.copyWith(isLoading: false, errorMessage: "API Failed");
+//     }
+//   }
 
-    try {
-      // 2. Call API to get Label
-      final data = await ApiService.getTagLabel(rawTag);
+Future<void> _handleScannedTag(String rawTag) async {
+  // Update state to loading
+  state = state.copyWith(rawRfid: rawTag, isLoading: true, errorMessage: null);
 
-      if (data != null && data.containsKey('Tag_Lable')) {
-        // 3. Success: Update Tag Label
-        state = state.copyWith(
-          tagLabel: data['Tag_Lable'].toString(),
-          isLoading: false
-        );
-      } else {
-        state = state.copyWith(isLoading: false, errorMessage: "Tag not found in DB");
-      }
-    } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: "API Failed");
+  try {
+    // API Call
+    final data = await ApiService.getTagLabel(rawTag);
+
+    if (data == null) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: "Something went wrong (null response)",
+      );
+      return;
     }
+
+    // 1️⃣ Check ErrorMsg (BUT DO NOT STOP EXECUTION)
+    final errorMsg = data["ErrorMsg"];
+    if (errorMsg != null && errorMsg.toString().trim().isNotEmpty) {
+      // Just show message — continue normally
+      state = state.copyWith(
+        errorMessage: errorMsg.toString(),
+      );
+    }
+
+    // 2️⃣ Continue normally to Tag_Lable
+    if (data.containsKey('Tag_Lable') && data['Tag_Lable'] != null) {
+      state = state.copyWith(
+        tagLabel: data['Tag_Lable'].toString(),
+        isLoading: false,
+      );
+      return;
+    }
+
+    // 3️⃣ Tag_Lable missing? show fallback error
+    state = state.copyWith(
+      isLoading: false,
+      errorMessage: state.errorMessage ?? "Tag not found in DB",
+    );
+
+  } catch (e) {
+    state = state.copyWith(
+      isLoading: false,
+      errorMessage: "API Failed",
+    );
   }
+}
 
   // Logic to Submit final data
 Future<bool> submitData(ContainerModel model) async {
@@ -118,6 +166,7 @@ print("🚀 Submitting Data================: $payload");
     
     state = state.copyWith(isLoading: false);
     return success;
+  
   }
 
   void disconnect() {

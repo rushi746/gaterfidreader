@@ -87,7 +87,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  _buildBadge("$widget.containerModel.size FT"),
+                                  _buildBadge(widget.containerModel.size),
                                   const SizedBox(width: 8),
                                   _buildBadge(widget.containerModel.type),
                                 ],

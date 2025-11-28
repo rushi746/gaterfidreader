@@ -9,7 +9,7 @@
 
 
     <application
-        android:label="Qikkle AMS"
+        android:label="Tag Reader"
         android:name="${applicationName}"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher">
