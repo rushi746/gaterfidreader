@@ -3,19 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qrcodedataextraction/data/containermodel.dart';
 import 'package:qrcodedataextraction/scanner/rfidprovider.dart';
 
-class ScannerScreen extends ConsumerWidget {
+class ScannerScreen extends ConsumerStatefulWidget {
   final ContainerModel containerModel;
 
-   const ScannerScreen({
-    super.key,
-    required this.containerModel,
-  });
+  const ScannerScreen({super.key, required this.containerModel});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ScannerScreen> createState() => _ScannerScreenState();
+}
+
+class _ScannerScreenState extends ConsumerState<ScannerScreen> {
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+ @override
+  Widget build(BuildContext context) {
     final scannerState = ref.watch(rfidScanProvider);
     final notifier = ref.read(rfidScanProvider.notifier);
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -69,7 +76,7 @@ class ScannerScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(containerModel.containerNo, 
+                              Text(widget.containerModel.containerNo, 
                                 style: const TextStyle(
                                   color: Colors.white, 
                                   fontSize: 22, // Reduced Font
@@ -80,9 +87,9 @@ class ScannerScreen extends ConsumerWidget {
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  _buildBadge("$containerModel.size FT"),
+                                  _buildBadge("$widget.containerModel.size FT"),
                                   const SizedBox(width: 8),
-                                  _buildBadge(containerModel.type),
+                                  _buildBadge(widget.containerModel.type),
                                 ],
                               )
                             ],
@@ -176,7 +183,7 @@ class ScannerScreen extends ConsumerWidget {
                       onPressed: (scannerState.isLoading || scannerState.tagLabel.isEmpty) 
                           ? null 
                           : () async {
-                              final success = await notifier.submitData(containerModel);
+                              final success = await notifier.submitData(widget.containerModel);
                               if (success && context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text("Gate In Successful!"), backgroundColor: Colors.green)

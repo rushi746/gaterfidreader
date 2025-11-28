@@ -34,9 +34,12 @@ class ScannerState {
 }
 
 // --- 2. The Provider Definition ---
-final rfidScanProvider = StateNotifierProvider<RfidScanNotifier, ScannerState>((ref) {
+final rfidScanProvider = StateNotifierProvider.autoDispose<RfidScanNotifier, ScannerState>((ref) {
   return RfidScanNotifier();
 });
+
+
+
 
 // --- 3. The Controller Logic ---
 class RfidScanNotifier extends StateNotifier<ScannerState> {
@@ -110,6 +113,7 @@ Future<bool> submitData(ContainerModel model) async {
       "GateInBy": 1
     };
 
+print("🚀 Submitting Data================: $payload");
     final success = await ApiService.submitContainerGateIn(payload);
     
     state = state.copyWith(isLoading: false);

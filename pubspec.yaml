@@ -27,7 +27,6 @@ dependencies:
   permission_handler: ^11.4.0
   flutter_blue_plus: ^1.35.3
   flutter_riverpod: ^2.5.0   # or latest
-  flutter_beep: ^1.0.0
 #  zebra_rfid_sdk_plugin: ^0.0.3
 
 dev_dependencies:
