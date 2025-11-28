@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qrcodedataextraction/data/containermodel.dart';
 import 'package:qrcodedataextraction/scanner/rfidprovider.dart';
 
 class ScannerScreen extends ConsumerWidget {
-  final String containerNo;
-  final String type;
-  final String size;
+  final ContainerModel containerModel;
 
-  const ScannerScreen({
+   const ScannerScreen({
     super.key,
-    required this.containerNo,
-    required this.type,
-    required this.size,
+    required this.containerModel,
   });
 
   @override
@@ -72,7 +69,7 @@ class ScannerScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(containerNo, 
+                              Text(containerModel.containerNo, 
                                 style: const TextStyle(
                                   color: Colors.white, 
                                   fontSize: 22, // Reduced Font
@@ -83,9 +80,9 @@ class ScannerScreen extends ConsumerWidget {
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  _buildBadge("$size FT"),
+                                  _buildBadge("$containerModel.size FT"),
                                   const SizedBox(width: 8),
-                                  _buildBadge(type),
+                                  _buildBadge(containerModel.type),
                                 ],
                               )
                             ],
@@ -179,7 +176,7 @@ class ScannerScreen extends ConsumerWidget {
                       onPressed: (scannerState.isLoading || scannerState.tagLabel.isEmpty) 
                           ? null 
                           : () async {
-                              final success = await notifier.submitData(containerNo);
+                              final success = await notifier.submitData(containerModel);
                               if (success && context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text("Gate In Successful!"), backgroundColor: Colors.green)

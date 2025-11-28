@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qrcodedataextraction/data/apiservice.dart';
+import 'package:qrcodedataextraction/data/containermodel.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_event_handler.dart';
 import 'package:zebra_rfid_sdk_plugin/zebra_rfid_sdk_plugin.dart';
 
@@ -88,25 +89,25 @@ class RfidScanNotifier extends StateNotifier<ScannerState> {
   }
 
   // Logic to Submit final data
-  Future<bool> submitData(String containerNo) async {
+Future<bool> submitData(ContainerModel model) async {
     if (state.tagLabel.isEmpty) return false;
 
     state = state.copyWith(isLoading: true);
 
     // Construct Payload
     final payload = {
-      "ContNo": containerNo,
-      "ContSizeId": 20, 
-      "ContTypeId": 1,  
+      "ContNo": model.containerNo,
+      "ContSizeId": model.sizeId, 
+      "ContTypeId": model.typeId,  
       "TagId": state.tagLabel, 
       "IsGateIn": true,
-      "ActivityId": 5,
-      "ProcessId": 2,
-      "IsActivePrioritize": false,
-      "Cont_Ref_no": "REF-${DateTime.now().millisecondsSinceEpoch}", // Example dynamic ref
+      "ActivityId": model.activityId,
+      "ProcessId": model.processId,
+      "IsActivePrioritize": model.isActivePrioritize,
+      "Cont_Ref_no": model.containerRefNumber,
       "GateInType": 1,
-      "Line_No": "LINE-01",
-      "GateInBy": 101
+      "Line_No": model.lineNo,
+      "GateInBy": 1
     };
 
     final success = await ApiService.submitContainerGateIn(payload);

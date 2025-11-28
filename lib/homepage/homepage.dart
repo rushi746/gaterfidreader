@@ -230,11 +230,8 @@ class HomePage extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ScannerScreen(
-                    containerNo: item.containerNo,
-                    type: item.type,
-                    size: item.size,
-                  ),
+              builder: (context) => ScannerScreen(containerModel: item),
+
                 ),
               );
             },
@@ -307,11 +304,7 @@ class HomePage extends ConsumerWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ScannerScreen(
-                                      containerNo: item.containerNo,
-                                      type: item.type,
-                                      size: item.size,
-                                    ),
+                                 builder: (context) => ScannerScreen(containerModel: item),
                                   ),
                                 );
                              
