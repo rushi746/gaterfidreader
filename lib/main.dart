@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:qrcodedataextraction/gateInOut/gateinout.dart';
 
 import 'package:qrcodedataextraction/loginpage/loginpage.dart';
 import 'package:qrcodedataextraction/splashscreen/spalshscreen.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: GateSelectionPage(),
     );
   }
 }

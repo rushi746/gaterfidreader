@@ -13,16 +13,24 @@ class ScannerScreen extends ConsumerStatefulWidget {
 }
 
 class _ScannerScreenState extends ConsumerState<ScannerScreen> {
+  // 1. ADD STATE VARIABLE
+  bool _isEmptyContainer = false; // <--- CHANGE: Variable to track checkbox state
 
   @override
   void dispose() {
     super.dispose();
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     final scannerState = ref.watch(rfidScanProvider);
     final notifier = ref.read(rfidScanProvider.notifier);
+    
+    // Logic to determine if button is enabled
+    // Enabled if: NOT loading AND (Tag is found OR Empty checkbox is checked)
+    bool isButtonEnabled = !scannerState.isLoading && 
+        (scannerState.tagLabel.isNotEmpty || _isEmptyContainer); // <--- CHANGE: Logic update
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -67,7 +75,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                         const SizedBox(height: 5),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(12), // Reduced Padding
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10),
@@ -79,7 +87,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                               Text(widget.containerModel.containerNo, 
                                 style: const TextStyle(
                                   color: Colors.white, 
-                                  fontSize: 22, // Reduced Font
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold, 
                                   letterSpacing: 1
                                 )
@@ -96,7 +104,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 20), // Reduced Gap
+                        const SizedBox(height: 20),
 
                         // --- SECTION 2: RFID SCAN INFO ---
                         _buildSectionTitle("SCANNER STATUS"),
@@ -124,7 +132,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                               else if (scannerState.rawRfid.isEmpty)
                                 Column(
                                   children: [
-                                    Icon(Icons.qr_code_scanner, size: 40, color: Colors.grey[600]), // Smaller Icon
+                                    Icon(Icons.qr_code_scanner, size: 40, color: Colors.grey[600]),
                                     const SizedBox(height: 8),
                                     Text("Pull trigger to scan", style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                                   ],
@@ -137,12 +145,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                                       scannerState.tagLabel.isEmpty ? "FETCHING..." : scannerState.tagLabel,
                                       style: const TextStyle(
                                         color: Color(0xFFFF6D00), 
-                                        fontSize: 26, // Reduced Font
+                                        fontSize: 26,
                                         fontWeight: FontWeight.w900,
                                       ),
                                     ),
                                     const Divider(color: Colors.white24, height: 20),
-                                    
                                     const Text("RAW RFID ID", style: TextStyle(color: Colors.grey, fontSize: 9)),
                                     Text(
                                       scannerState.rawRfid,
@@ -164,26 +171,59 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                               style: const TextStyle(color: Colors.redAccent, fontSize: 11),
                             ),
                           ),
+
+                        const SizedBox(height: 20),
+
+                        // --- 3. NEW CHECKBOX SECTION --- 
+                        Container( // <--- CHANGE: Added Container for styling
+                           decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: _isEmptyContainer ? Colors.orangeAccent : Colors.white12),
+                          ),
+                          child: CheckboxListTile(
+                            title: const Text(
+                              "Empty Container (No Tag)",
+                              style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: const Text(
+                              "Check this if Container has no RFID tag",
+                              style: TextStyle(color: Colors.grey, fontSize: 11),
+                            ),
+                            value: _isEmptyContainer,
+                            activeColor: const Color(0xFFFF6D00),
+                            checkColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isEmptyContainer = value ?? false;
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
 
-                // --- SUBMIT BUTTON (Always fixed at bottom) ---
+                // --- SUBMIT BUTTON ---
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Subtle background for button area
+                    color: Colors.black.withOpacity(0.5),
                     border: const Border(top: BorderSide(color: Colors.white12)),
                   ),
                   child: SizedBox(
                     width: double.infinity,
-                    height: 48, // Slightly smaller height
+                    height: 48,
                     child: ElevatedButton(
-                      onPressed: (scannerState.isLoading || scannerState.tagLabel.isEmpty) 
-                          ? null 
-                          : () async {
+                      // 4. UPDATE BUTTON LOGIC
+                      onPressed: isButtonEnabled // <--- CHANGE: Using the boolean logic defined at top
+                          ? () async {
+                              // NOTE: You might need to update submitData to handle 
+                              // cases where tagLabel is empty but _isEmptyContainer is true.
                               final success = await notifier.submitData(widget.containerModel);
+                              
                               if (success && context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text("Gate In Successful!"), backgroundColor: Colors.green)
@@ -194,7 +234,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                                   const SnackBar(content: Text("Submission Failed"), backgroundColor: Colors.red)
                                 );
                               }
-                            },
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF6D00),
                         disabledBackgroundColor: Colors.grey[800],
@@ -223,7 +264,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       title,
       style: TextStyle(
         color: Colors.orangeAccent.withOpacity(0.8),
-        fontSize: 11, // Smaller Font
+        fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
       ),

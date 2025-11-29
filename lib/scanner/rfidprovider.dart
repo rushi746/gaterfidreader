@@ -111,12 +111,12 @@ Future<void> _handleScannedTag(String rawTag,) async {
 
     // 1️⃣ Check ErrorMsg (BUT DO NOT STOP EXECUTION)
     final errorMsg = data["ErrorMsg"];
-    if (errorMsg != null && errorMsg.toString().trim().isNotEmpty) {
-      // Just show message — continue normally
-      state = state.copyWith(
-        errorMessage: errorMsg.toString(),
-      );
-    }
+    if (data.containsKey("TagType") && data["TagType"] != null) {
+  state = state.copyWith(
+    errorMessage: data["TagType"].toString(), // use as popup message
+  );
+}
+
  if (data.containsKey("TagType") && data["TagType"] != null) {
 void _showTagTypePopup(BuildContext context, String tagType) {
   showDialog(
@@ -159,7 +159,8 @@ void _showTagTypePopup(BuildContext context, String tagType) {
 
   // Logic to Submit final data
 Future<bool> submitData(ContainerModel model) async {
-    if (state.tagLabel.isEmpty) return false;
+
+    // if (state.tagLabel.isEmpty) return false;
 
     state = state.copyWith(isLoading: true);
 
@@ -168,7 +169,10 @@ Future<bool> submitData(ContainerModel model) async {
       "ContNo": model.containerNo,
       "ContSizeId": model.sizeId, 
       "ContTypeId": model.typeId,  
-      "TagId": state.tagLabel, 
+      // "TagId": state.tagLabel, 
+      "TagId": (state.tagLabel != null && state.tagLabel.trim().isNotEmpty)
+    ? state.tagLabel
+    : "00000000",
       "IsGateIn": true,
       "ActivityId": model.activityId,
       "ProcessId": model.processId,

@@ -100,5 +100,76 @@ print("📤 Request Body for Tag Label: $body");
       return false;
     }
   }
+// ======================= GATE OUT APIs =======================
+
+static Future<Map<String, dynamic>?> getGateOutDetail(String tag) async {
+  try {
+    final url = Uri.parse("$baseUrl/GateOut/GetContainerGateOutDetail");
+
+    final body = jsonEncode({
+      "ContainerTag": tag,
+    });
+
+    print("📤 GateOut Detail Request: $body");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+
+    print("📥 GateOut Detail Response: ${response.body}");
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print("❌ GateOut Detail Error Code: ${response.statusCode}");
+      return null;
+    }
+  } catch (e) {
+    print("❌ GateOut Detail Exception: $e");
+    return null;
+  }
+}
+
+
+// ----------- Submit Container GATE OUT ----------
+static Future<bool> submitGateOut({
+  required int masterId,
+  required int gateOutBy,
+  required int gateOutType,
+  required String tagLabel,
+}) async {
+  try {
+    final url = Uri.parse("$baseUrl/GateOut/ContainerGateOut");
+
+    final payload = {
+      "Master_Id": masterId,
+      "Gate_Out_By": gateOutBy,
+      "GateOutType": gateOutType,
+      "TagLable": tagLabel,
+    };
+
+    print("📤 GateOut Submit Payload: $payload");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(payload),
+    );
+
+    print("📥 GateOut Submit Response: ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print("❌ GateOut Submit Error Code: ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    print("❌ GateOut Submit Exception: $e");
+    return false;
+  }
+}
 
 }
