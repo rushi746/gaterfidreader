@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qrcodedataextraction/data/apiservice.dart';
 import 'package:qrcodedataextraction/data/containermodel.dart';
@@ -91,7 +93,7 @@ class RfidScanNotifier extends StateNotifier<ScannerState> {
 //     }
 //   }
 
-Future<void> _handleScannedTag(String rawTag) async {
+Future<void> _handleScannedTag(String rawTag,) async {
   // Update state to loading
   state = state.copyWith(rawRfid: rawTag, isLoading: true, errorMessage: null);
 
@@ -115,7 +117,23 @@ Future<void> _handleScannedTag(String rawTag) async {
         errorMessage: errorMsg.toString(),
       );
     }
-
+ if (data.containsKey("TagType") && data["TagType"] != null) {
+void _showTagTypePopup(BuildContext context, String tagType) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: Text("Tag Type"),
+      content: Text(tagType),
+      actions: [
+        TextButton(
+          child: const Text("OK"),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    ),
+  );
+}
+    }
     // 2️⃣ Continue normally to Tag_Lable
     if (data.containsKey('Tag_Lable') && data['Tag_Lable'] != null) {
       state = state.copyWith(

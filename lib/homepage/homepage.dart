@@ -152,14 +152,46 @@ class HomePage extends ConsumerWidget {
                             ],
                           ),
                         )
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: containerList.length,
-                          itemBuilder: (context, index) {
-                            return _buildIndustrialCard(context, containerList[index], primaryOrange);
-                          },
-                        ),
+                      : 
+Expanded(
+  child: RefreshIndicator(
+    onRefresh: () async {
+      await ref.read(homeProvider.notifier).refreshList();
+    },
+    color: Colors.orangeAccent,
+    backgroundColor: Colors.white,
+
+    child: containerList.isEmpty
+        ? ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              SizedBox(height: 200),
+              Icon(Icons.check_circle_outline, color: Colors.white54, size: 60),
+              SizedBox(height: 10),
+              Center(
+                child: Text("All Tasks Completed",
+                    style: TextStyle(color: Colors.white54)),
+              ),
+            ],
+          )
+
+        : ListView.builder(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: containerList.length,
+            itemBuilder: (context, index) {
+              return _buildIndustrialCard(
+                context,
+                containerList[index],
+                const Color(0xFFFF6D00),
+              );
+            },
+          ),
+  ),
+)
+
+               
                 ),
               ],
             ),
