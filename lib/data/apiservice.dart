@@ -109,7 +109,7 @@ static Future<Map<String, dynamic>?> getGateOutDetail(String tag) async {
     final body = jsonEncode({
       "ContainerTag": tag,
     });
-
+   
     print("📤 GateOut Detail Request: $body");
 
     final response = await http.post(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:qrcodedataextraction/data/containermodel.dart';
+import 'package:qrcodedataextraction/gateInOut/gateinout.dart';
 import 'package:qrcodedataextraction/homepage/homecontroller.dart';
 import 'package:qrcodedataextraction/loginpage/loginpage.dart';
 import 'package:qrcodedataextraction/scanner/scannerscreen.dart'; 
@@ -119,9 +120,15 @@ class HomePage extends ConsumerWidget {
 
                           // --- LOGOUT BUTTON ---
                           InkWell(
-                            onTap: () {
-                              _showLogoutDialog(context);
-                            },
+                           onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => GateSelectionPage(),
+    ),
+  );
+},
+
                             borderRadius: BorderRadius.circular(30),
                             child: Container(
                               padding: const EdgeInsets.all(8),
@@ -130,7 +137,7 @@ class HomePage extends ConsumerWidget {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
                               ),
-                              child: const Icon(Icons.logout, color: Colors.white, size: 20),
+                              child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
                             ),
                           ),
                         ],

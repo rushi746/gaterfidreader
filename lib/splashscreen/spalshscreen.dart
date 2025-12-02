@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qrcodedataextraction/gateInOut/gateinout.dart';
 import 'package:qrcodedataextraction/homepage/homepage.dart';
 import 'package:qrcodedataextraction/loginpage/loginpage.dart';
 import 'package:qrcodedataextraction/splashscreen/spalshcontroller.dart';
@@ -16,7 +17,7 @@ class SplashScreen extends ConsumerWidget {
         if (isLoggedIn) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const HomePage()),
+            MaterialPageRoute(builder: (_) => const GateSelectionPage()),
           );
         } else {
           Navigator.pushReplacement(

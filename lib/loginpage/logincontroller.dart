@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:qrcodedataextraction/data/apiservice.dart';
+import 'package:qrcodedataextraction/gateInOut/gateinout.dart';
 import 'package:qrcodedataextraction/homepage/homepage.dart';
 
 class LoginController {
@@ -45,7 +46,7 @@ class LoginController {
         if (context.mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) =>  HomePage()),
+            MaterialPageRoute(builder: (context) =>  GateSelectionPage()),
           );
         }
       } else {

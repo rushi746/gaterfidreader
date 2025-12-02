@@ -6,6 +6,8 @@ import 'package:qrcodedataextraction/loginpage/loginpage.dart';
 
 import 'dart:ui';
 
+import 'package:qrcodedataextraction/rfidscannerpage/scannerscreen.dart';
+
 class GateSelectionPage extends StatelessWidget {
   const GateSelectionPage({super.key});
 
@@ -127,7 +129,7 @@ class GateSelectionPage extends StatelessWidget {
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (_) => const GateOut()),
+                                        MaterialPageRoute(builder: (_) => const GateOutscanner()),
                                       );
                                     },
                                   ),
